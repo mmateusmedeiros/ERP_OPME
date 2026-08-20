@@ -66,25 +66,16 @@ significa que a tarefa não está pronta.
 
 ## Loop de validação — obrigatório
 
-**Migration não validada contra um Postgres real não está pronta.** O ambiente
-já foi usado assim; reproduza:
+**Migration não validada contra um Postgres real não está pronta.**
 
 ```bash
-# Se o apt falhar com 404 em security.ubuntu.com:
-sed -i 's|security\.ubuntu\.com|archive.ubuntu.com|g' \
-    /etc/apt/sources.list.d/*.sources /etc/apt/sources.list 2>/dev/null
-apt-get update && apt-get install -y postgresql postgresql-contrib
-pg_ctlcluster 16 main start
-
-su postgres -c "psql -q -c 'drop database if exists opme;' -c 'create database opme;'"
-su postgres -c "psql -v ON_ERROR_STOP=1 -d opme -f test/00_stub_supabase.sql"
-for f in supabase/migrations/*.sql; do
-  su postgres -c "psql -v ON_ERROR_STOP=1 -q -d opme -f $PWD/$f" || break
-done
-for f in test/*_test_*.sql; do
-  su postgres -c "psql -v ON_ERROR_STOP=1 -q -d opme -f $PWD/$f"
-done
+./scripts/test-db.sh
 ```
+
+O script instala o Postgres se necessário, recria a base do zero, aplica todas
+as migrations na ordem e roda a suite. Falha em qualquer etapa aborta com o erro.
+Se o `apt` devolver 404 em `security.ubuntu.com`, o script já redireciona para
+`archive.ubuntu.com` sozinho.
 
 `test/00_stub_supabase.sql` recria o mínimo do ambiente Supabase (schema `auth`,
 `auth.uid()`, roles `anon`/`authenticated`/`service_role`).

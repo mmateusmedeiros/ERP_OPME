@@ -1,0 +1,32 @@
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+build/
+.vite/
+
+# Ambiente — NUNCA commitar chaves do Supabase
+.env
+.env.*
+!.env.example
+.env.local
+
+# Supabase CLI
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# Editor / SO
+.DS_Store
+.idea/
+*.swp
+.vscode/*
+!.vscode/extensions.json
+
+# Logs e temporários
+*.log
+npm-debug.log*
+/tmp/
